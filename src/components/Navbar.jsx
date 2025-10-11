@@ -7,7 +7,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
       <div className="container-fluid">
         <a className="navbar-brand" href="#">
-          <i className="fas fa-robot me-2"></i>Payment Bot Admin
+          <i className="fas fa-robot me-2"></i>Emmtreb Admin
         </a>
 
         <div className="navbar-nav ms-auto">

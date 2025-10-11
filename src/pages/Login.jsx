@@ -48,7 +48,7 @@ const Login = () => {
         <div className="login-header">
           <i className="fas fa-shield-alt fa-2x mb-3"></i>
           <h1>Admin Panel</h1>
-          <p>Payment Bot Management System</p>
+          <p>Emmtreb System</p>
         </div>
 
         <div className="login-body">
