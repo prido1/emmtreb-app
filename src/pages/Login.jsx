@@ -5,8 +5,8 @@ import Alert from '../components/Alert';
 import '../styles/login.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('williechieza@yahoo.co.uk');
+  const [password, setPassword] = useState('bill0773765845');
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
 
@@ -104,13 +104,6 @@ const Login = () => {
               </button>
             </div>
           </form>
-
-          <div className="text-center mt-3">
-            <small className="text-muted">
-              <i className="fas fa-info-circle me-1"></i>
-              Default: admin / admin123
-            </small>
-          </div>
         </div>
       </div>
     </div>
