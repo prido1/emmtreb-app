@@ -5,8 +5,10 @@ import Alert from '../components/Alert';
 import '../styles/login.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('williechieza@yahoo.co.uk');
-  const [password, setPassword] = useState('bill0773765845');
+  // const [username, setUsername] = useState('williechieza@yahoo.co.uk');
+  // const [password, setPassword] = useState('bill0773765845');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
 
