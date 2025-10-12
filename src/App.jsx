@@ -10,6 +10,8 @@ import Customers from './pages/Customers';
 import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
+import AdminManagement from './pages/AdminManagement';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <Route path="customers" element={<Customers />} />
             <Route path="payments" element={<Payments />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="admins" element={<AdminManagement />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile />} />
           </Route>
         </Routes>

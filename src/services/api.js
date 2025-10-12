@@ -108,4 +108,14 @@ export const reportsAPI = {
   },
 };
 
+// Admin Management API
+export const adminAPI = {
+  getAll: (params) => apiClient.get('/api/admin/admins', { params }),
+  getById: (id) => apiClient.get(`/api/admin/admins/${id}`),
+  create: (data) => apiClient.post('/api/admin/admins', data),
+  update: (id, data) => apiClient.put(`/api/admin/admins/${id}`, data),
+  delete: (id) => apiClient.delete(`/api/admin/admins/${id}`),
+  getRoles: () => apiClient.get('/api/admin/roles'),
+};
+
 export default apiClient;
