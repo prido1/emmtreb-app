@@ -118,4 +118,18 @@ export const adminAPI = {
   getRoles: () => apiClient.get('/api/admin/roles'),
 };
 
+// Settings API
+export const settingsAPI = {
+  getAll: (params) => apiClient.get('/api/settings', { params }),
+  getByKey: (key) => apiClient.get(`/api/settings/${key}`),
+  update: (key, data) => apiClient.put(`/api/settings/${key}`, data),
+  create: (data) => apiClient.post('/api/settings', data),
+  delete: (key) => apiClient.delete(`/api/settings/${key}`),
+
+  // Paynow specific
+  getPaynowConfig: () => apiClient.get('/api/settings/paynow'),
+  updatePaynowConfig: (data) => apiClient.put('/api/settings/paynow/config', data),
+  testPaynowConnection: () => apiClient.post('/api/settings/paynow/test'),
+};
+
 export default apiClient;
