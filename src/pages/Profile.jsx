@@ -13,6 +13,8 @@ const Profile = () => {
   const [profileForm, setProfileForm] = useState({
     email: '',
     fullName: '',
+    telegramId: '',
+    whatsappId: '',
   });
   const [profileLoading, setProfileLoading] = useState(false);
 
@@ -37,6 +39,8 @@ const Profile = () => {
         setProfileForm({
           email: response.data.admin.email || '',
           fullName: response.data.admin.fullName || '',
+          telegramId: response.data.admin.telegramId || '',
+          whatsappId: response.data.admin.whatsappId || '',
         });
       }
     } catch (error) {
@@ -57,6 +61,8 @@ const Profile = () => {
       const response = await authAPI.updateProfile({
         email: profileForm.email || null,
         fullName: profileForm.fullName || null,
+        telegramId: profileForm.telegramId || null,
+        whatsappId: profileForm.whatsappId || null,
       });
 
       if (response.success) {
@@ -251,6 +257,40 @@ const Profile = () => {
                       onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                       disabled={profileLoading}
                     />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="telegramId" className="form-label">
+                      <i className="fab fa-telegram me-1"></i>
+                      Telegram ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telegramId"
+                      placeholder="Enter your Telegram ID for notifications"
+                      value={profileForm.telegramId}
+                      onChange={(e) => setProfileForm({ ...profileForm, telegramId: e.target.value })}
+                      disabled={profileLoading}
+                    />
+                    <small className="text-muted">Your Telegram user ID (numeric) for receiving admin notifications</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="whatsappId" className="form-label">
+                      <i className="fab fa-whatsapp me-1"></i>
+                      WhatsApp ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="whatsappId"
+                      placeholder="Enter your WhatsApp ID for notifications"
+                      value={profileForm.whatsappId}
+                      onChange={(e) => setProfileForm({ ...profileForm, whatsappId: e.target.value })}
+                      disabled={profileLoading}
+                    />
+                    <small className="text-muted">Your WhatsApp phone number ID for receiving admin notifications</small>
                   </div>
 
                   <div className="mb-3">

@@ -8,6 +8,8 @@ const AdminModal = ({ show, onClose, onSave, admin, roles }) => {
     fullName: '',
     role: 'operator',
     isActive: true,
+    telegramId: '',
+    whatsappId: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,8 @@ const AdminModal = ({ show, onClose, onSave, admin, roles }) => {
         fullName: admin.fullName || '',
         role: admin.role || 'operator',
         isActive: admin.isActive !== undefined ? admin.isActive : true,
+        telegramId: admin.telegramId || '',
+        whatsappId: admin.whatsappId || '',
       });
     } else {
       // Create mode
@@ -32,6 +36,8 @@ const AdminModal = ({ show, onClose, onSave, admin, roles }) => {
         fullName: '',
         role: 'operator',
         isActive: true,
+        telegramId: '',
+        whatsappId: '',
       });
     }
     setErrors({});
@@ -186,6 +192,44 @@ const AdminModal = ({ show, onClose, onSave, admin, roles }) => {
                 {errors.email && (
                   <div className="invalid-feedback">{errors.email}</div>
                 )}
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="telegramId" className="form-label">
+                  <i className="fab fa-telegram me-1"></i>
+                  Telegram ID
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="telegramId"
+                  name="telegramId"
+                  value={formData.telegramId}
+                  onChange={handleChange}
+                  placeholder="Enter Telegram user ID for notifications"
+                />
+                <small className="form-text text-muted">
+                  Numeric Telegram user ID for receiving admin notifications
+                </small>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="whatsappId" className="form-label">
+                  <i className="fab fa-whatsapp me-1"></i>
+                  WhatsApp ID
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="whatsappId"
+                  name="whatsappId"
+                  value={formData.whatsappId}
+                  onChange={handleChange}
+                  placeholder="Enter WhatsApp phone number ID"
+                />
+                <small className="form-text text-muted">
+                  WhatsApp phone number ID for receiving admin notifications
+                </small>
               </div>
 
               <div className="mb-3">

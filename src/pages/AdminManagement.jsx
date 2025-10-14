@@ -241,6 +241,7 @@ const AdminManagement = () => {
                   <th>Full Name</th>
                   <th>Email</th>
                   <th>Role</th>
+                  <th>Notifications</th>
                   <th>Status</th>
                   <th>Last Login</th>
                   <th>Created</th>
@@ -250,7 +251,7 @@ const AdminManagement = () => {
               <tbody>
                 {admins.length === 0 ? (
                   <tr>
-                    <td colSpan={canManageAdmins ? 8 : 7} className="text-center py-4">
+                    <td colSpan={canManageAdmins ? 9 : 8} className="text-center py-4">
                       <i className="fas fa-users fa-3x text-muted mb-3"></i>
                       <p className="text-muted">No admins found</p>
                     </td>
@@ -270,6 +271,17 @@ const AdminManagement = () => {
                         <span className={`badge bg-${getRoleBadgeColor(admin.role)}`}>
                           {admin.roleDisplay}
                         </span>
+                      </td>
+                      <td>
+                        {admin.telegramId && (
+                          <i className="fab fa-telegram text-primary me-2" title="Telegram linked"></i>
+                        )}
+                        {admin.whatsappId && (
+                          <i className="fab fa-whatsapp text-success" title="WhatsApp linked"></i>
+                        )}
+                        {!admin.telegramId && !admin.whatsappId && (
+                          <span className="text-muted">-</span>
+                        )}
                       </td>
                       <td>
                         {admin.isActive ? (
