@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import PaymentDetailsModal from '../components/PaymentDetailsModal';
+import Pagination from '../components/Pagination';
 import { paymentsAPI } from '../services/api';
 import { formatCurrency, formatDate, getStatusBadgeClass, getPaymentMethodBadgeClass } from '../utils/helpers';
 
@@ -12,13 +13,21 @@ const Payments = () => {
   const [processingPaymentId, setProcessingPaymentId] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    pages: 0,
+  });
 
-  const loadPayments = async () => {
+  const loadPayments = async (page = 1, limit = 20) => {
     try {
       setLoading(true);
-      const response = await paymentsAPI.getAll();
+      const params = { page, limit };
+      const response = await paymentsAPI.getAll(params);
       if (response.success) {
         setPayments(response.data.payments || []);
+        setPagination(response.data.pagination || { total: 0, pages: 0 });
       }
     } catch (error) {
       console.error('Error loading payments:', error);
@@ -26,6 +35,15 @@ const Payments = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (limit) => {
+    setItemsPerPage(limit);
+    setCurrentPage(1); // Reset to first page when items per page changes
   };
 
   const handleMarkAsPaid = async (paymentId) => {
@@ -41,7 +59,7 @@ const Payments = () => {
 
       if (response.success) {
         setAlert({ message: 'Payment marked as paid successfully', type: 'success' });
-        await loadPayments(); // Reload payments to show updated status
+        await loadPayments(currentPage, itemsPerPage); // Reload payments to show updated status
       }
     } catch (error) {
       console.error('Error marking payment as paid:', error);
@@ -75,8 +93,8 @@ const Payments = () => {
   };
 
   useEffect(() => {
-    loadPayments();
-  }, []);
+    loadPayments(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
 
   return (
     <div className="content-section">
@@ -175,6 +193,18 @@ const Payments = () => {
                 </tbody>
               </table>
             </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && pagination.total > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.pages}
+              totalItems={pagination.total}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
           )}
         </div>
       </div>
