@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
+import Pagination from '../components/Pagination';
 import { reportsAPI } from '../services/api';
 import { formatCurrency } from '../utils/helpers';
 
@@ -9,6 +10,8 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
   const [period, setPeriod] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   const loadReports = async (selectedPeriod) => {
     try {
@@ -32,7 +35,28 @@ const Reports = () => {
 
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod);
+    setCurrentPage(1); // Reset to first page when period changes
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (limit) => {
+    setItemsPerPage(limit);
+    setCurrentPage(1); // Reset to first page when items per page changes
+  };
+
+  // Calculate paginated orders
+  const getPaginatedOrders = () => {
+    if (!reports?.orders) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return reports.orders.slice(startIndex, endIndex);
+  };
+
+  const totalOrders = reports?.orders?.length || 0;
+  const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
   return (
     <div className="content-section">
@@ -264,47 +288,61 @@ const Reports = () => {
                 </div>
                 <div className="card-body">
                   {reports?.orders && reports.orders.length > 0 ? (
-                    <div className="table-responsive">
-                      <table className="table table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Product</th>
-                            <th>Revenue</th>
-                            <th>Cost</th>
-                            <th>Profit</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {reports.orders.slice(0, 20).map((order) => (
-                            <tr key={order.id}>
-                              <td><small>{order.orderReference}</small></td>
-                              <td><small>{order.customer?.name || 'N/A'}</small></td>
-                              <td><small>{order.product?.name || 'N/A'}</small></td>
-                              <td><small className="text-success">{formatCurrency(order.amount)}</small></td>
-                              <td><small className="text-danger">{formatCurrency(order.cost || 0)}</small></td>
-                              <td>
-                                <small className={order.profit > 0 ? 'text-success fw-bold' : 'text-muted'}>
-                                  {formatCurrency(order.profit || 0)}
-                                </small>
-                              </td>
-                              <td>
-                                <span className={`badge ${
-                                  order.status === 'activated' ? 'bg-success' :
-                                  order.status === 'paid' ? 'bg-info' :
-                                  order.status === 'pending' ? 'bg-warning' :
-                                  'bg-secondary'
-                                }`}>
-                                  <small>{order.status}</small>
-                                </span>
-                              </td>
+                    <>
+                      <div className="table-responsive">
+                        <table className="table table-striped table-hover">
+                          <thead>
+                            <tr>
+                              <th>Order ID</th>
+                              <th>Customer</th>
+                              <th>Product</th>
+                              <th>Revenue</th>
+                              <th>Cost</th>
+                              <th>Profit</th>
+                              <th>Status</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {getPaginatedOrders().map((order) => (
+                              <tr key={order.id}>
+                                <td><small>{order.orderReference}</small></td>
+                                <td><small>{order.customer?.name || 'N/A'}</small></td>
+                                <td><small>{order.product?.name || 'N/A'}</small></td>
+                                <td><small className="text-success">{formatCurrency(order.amount)}</small></td>
+                                <td><small className="text-danger">{formatCurrency(order.cost || 0)}</small></td>
+                                <td>
+                                  <small className={order.profit > 0 ? 'text-success fw-bold' : 'text-muted'}>
+                                    {formatCurrency(order.profit || 0)}
+                                  </small>
+                                </td>
+                                <td>
+                                  <span className={`badge ${
+                                    order.status === 'activated' ? 'bg-success' :
+                                    order.status === 'paid' ? 'bg-info' :
+                                    order.status === 'pending' ? 'bg-warning' :
+                                    'bg-secondary'
+                                  }`}>
+                                    <small>{order.status}</small>
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination */}
+                      {totalOrders > 0 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          totalItems={totalOrders}
+                          itemsPerPage={itemsPerPage}
+                          onPageChange={handlePageChange}
+                          onItemsPerPageChange={handleItemsPerPageChange}
+                        />
+                      )}
+                    </>
                   ) : (
                     <p className="text-muted text-center">No data available</p>
                   )}
