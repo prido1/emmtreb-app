@@ -83,83 +83,232 @@ const Reports = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="row">
-          <div className="col-md-6">
-            <div className="card shadow mb-4">
-              <div className="card-header">
-                <h6 className="m-0 font-weight-bold text-primary">Sales Summary</h6>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-6">
-                    <strong>Total Sales:</strong>
-                    <br />
-                    <span className="h4 text-success">
-                      {formatCurrency(reports?.summary?.totalRevenue || 0)}
-                    </span>
+        <div>
+          {/* Summary Cards Row */}
+          <div className="row mb-4">
+            <div className="col-md-3">
+              <div className="card shadow h-100">
+                <div className="card-body">
+                  <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Total Revenue
                   </div>
-                  <div className="col-6">
-                    <strong>Total Orders:</strong>
-                    <br />
-                    <span className="h4 text-primary">{reports?.summary?.totalOrders || 0}</span>
+                  <div className="h5 mb-0 font-weight-bold text-success">
+                    {formatCurrency(reports?.summary?.totalRevenue || 0)}
+                  </div>
+                  <small className="text-muted">
+                    {reports?.summary?.activatedOrders || 0} activated orders
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="card shadow h-100">
+                <div className="card-body">
+                  <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    Total Profit
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-success">
+                    {formatCurrency(reports?.summary?.totalProfit || 0)}
+                  </div>
+                  <small className="text-muted">
+                    {reports?.summary?.profitMargin?.toFixed(2) || 0}% margin
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="card shadow h-100">
+                <div className="card-body">
+                  <div className="text-xs font-weight-bold text-info text-uppercase mb-1">
+                    Total Cost
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-info">
+                    {formatCurrency(reports?.summary?.totalCost || 0)}
+                  </div>
+                  <small className="text-muted">Product base costs</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="card shadow h-100">
+                <div className="card-body">
+                  <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    Total Orders
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-primary">
+                    {reports?.summary?.totalOrders || 0}
+                  </div>
+                  <small className="text-muted">
+                    Avg: {formatCurrency(reports?.summary?.averageOrderValue || 0)}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Metrics Row */}
+          <div className="row mb-4">
+            <div className="col-md-6">
+              <div className="card shadow">
+                <div className="card-header">
+                  <h6 className="m-0 font-weight-bold text-primary">Profit Analysis</h6>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="text-muted">Average Profit per Order</span>
+                      <strong className="text-success">
+                        {formatCurrency(reports?.summary?.averageProfit || 0)}
+                      </strong>
+                    </div>
+                    <div className="progress" style={{ height: '8px' }}>
+                      <div
+                        className="progress-bar bg-success"
+                        role="progressbar"
+                        style={{ width: '100%' }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="text-muted">Profit Margin</span>
+                      <strong className="text-info">
+                        {reports?.summary?.profitMargin?.toFixed(2) || 0}%
+                      </strong>
+                    </div>
+                    <div className="progress" style={{ height: '8px' }}>
+                      <div
+                        className="progress-bar bg-info"
+                        role="progressbar"
+                        style={{ width: `${Math.min(reports?.summary?.profitMargin || 0, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div className="row text-center">
+                    <div className="col-6 border-end">
+                      <div className="text-muted small">Revenue</div>
+                      <div className="h6 mb-0 text-success">
+                        {formatCurrency(reports?.summary?.totalRevenue || 0)}
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className="text-muted small">Cost</div>
+                      <div className="h6 mb-0 text-danger">
+                        {formatCurrency(reports?.summary?.totalCost || 0)}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <hr />
-                <div className="row">
-                  <div className="col-6">
-                    <strong>Total Profit:</strong>
-                    <br />
-                    <span className="h4 text-info">
-                      {formatCurrency(reports?.summary?.totalProfit || 0)}
-                    </span>
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="card shadow">
+                <div className="card-header">
+                  <h6 className="m-0 font-weight-bold text-primary">Order Statistics</h6>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="text-muted">Total Orders</span>
+                      <strong>{reports?.summary?.totalOrders || 0}</strong>
+                    </div>
                   </div>
-                  <div className="col-6">
-                    <strong>Avg Order:</strong>
-                    <br />
-                    <span className="h4 text-warning">
-                      {formatCurrency(reports?.summary?.averageOrderValue || 0)}
-                    </span>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="text-muted">Activated Orders</span>
+                      <strong className="text-success">
+                        {reports?.summary?.activatedOrders || 0}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="text-muted">Pending Orders</span>
+                      <strong className="text-warning">
+                        {(reports?.summary?.totalOrders || 0) - (reports?.summary?.activatedOrders || 0)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div className="mb-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="text-muted">Average Order Value</span>
+                      <strong className="text-primary">
+                        {formatCurrency(reports?.summary?.averageOrderValue || 0)}
+                      </strong>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-md-6">
-            <div className="card shadow mb-4">
-              <div className="card-header">
-                <h6 className="m-0 font-weight-bold text-primary">Recent Orders</h6>
-              </div>
-              <div className="card-body">
-                {reports?.orders && reports.orders.length > 0 ? (
-                  <div className="table-responsive" style={{ maxHeight: '400px' }}>
-                    <table className="table table-sm">
-                      <thead>
-                        <tr>
-                          <th>Order ID</th>
-                          <th>Customer</th>
-                          <th>Amount</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reports.orders.slice(0, 10).map((order) => (
-                          <tr key={order.id}>
-                            <td><small>{order.orderReference}</small></td>
-                            <td><small>{order.customer?.name || 'N/A'}</small></td>
-                            <td><small>{formatCurrency(order.amount)}</small></td>
-                            <td>
-                              <span className="badge bg-success">
-                                <small>{order.status}</small>
-                              </span>
-                            </td>
+
+          {/* Recent Orders Table */}
+          <div className="row">
+            <div className="col-12">
+              <div className="card shadow">
+                <div className="card-header">
+                  <h6 className="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                </div>
+                <div className="card-body">
+                  {reports?.orders && reports.orders.length > 0 ? (
+                    <div className="table-responsive">
+                      <table className="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Revenue</th>
+                            <th>Cost</th>
+                            <th>Profit</th>
+                            <th>Status</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-muted">No data available</p>
-                )}
+                        </thead>
+                        <tbody>
+                          {reports.orders.slice(0, 20).map((order) => (
+                            <tr key={order.id}>
+                              <td><small>{order.orderReference}</small></td>
+                              <td><small>{order.customer?.name || 'N/A'}</small></td>
+                              <td><small>{order.product?.name || 'N/A'}</small></td>
+                              <td><small className="text-success">{formatCurrency(order.amount)}</small></td>
+                              <td><small className="text-danger">{formatCurrency(order.cost || 0)}</small></td>
+                              <td>
+                                <small className={order.profit > 0 ? 'text-success fw-bold' : 'text-muted'}>
+                                  {formatCurrency(order.profit || 0)}
+                                </small>
+                              </td>
+                              <td>
+                                <span className={`badge ${
+                                  order.status === 'activated' ? 'bg-success' :
+                                  order.status === 'paid' ? 'bg-info' :
+                                  order.status === 'pending' ? 'bg-warning' :
+                                  'bg-secondary'
+                                }`}>
+                                  <small>{order.status}</small>
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-muted text-center">No data available</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
