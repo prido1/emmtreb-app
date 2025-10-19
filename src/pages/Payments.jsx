@@ -13,6 +13,7 @@ const Payments = () => {
   const [processingPaymentId, setProcessingPaymentId] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [pagination, setPagination] = useState({
@@ -20,10 +21,13 @@ const Payments = () => {
     pages: 0,
   });
 
-  const loadPayments = async (page = 1, limit = 20) => {
+  const loadPayments = async (search = '', page = 1, limit = 20) => {
     try {
       setLoading(true);
       const params = { page, limit };
+      if (search) {
+        params.search = search;
+      }
       const response = await paymentsAPI.getAll(params);
       if (response.success) {
         setPayments(response.data.payments || []);
@@ -46,6 +50,18 @@ const Payments = () => {
     setCurrentPage(1); // Reset to first page when items per page changes
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadPayments(searchTerm, 1, itemsPerPage);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setCurrentPage(1);
+    loadPayments('', 1, itemsPerPage);
+  };
+
   const handleMarkAsPaid = async (paymentId) => {
     if (!window.confirm('Are you sure you want to mark this payment as paid? This action will update the order status.')) {
       return;
@@ -59,7 +75,7 @@ const Payments = () => {
 
       if (response.success) {
         setAlert({ message: 'Payment marked as paid successfully', type: 'success' });
-        await loadPayments(currentPage, itemsPerPage); // Reload payments to show updated status
+        await loadPayments(searchTerm, currentPage, itemsPerPage); // Reload payments to show updated status
       }
     } catch (error) {
       console.error('Error marking payment as paid:', error);
@@ -93,7 +109,7 @@ const Payments = () => {
   };
 
   useEffect(() => {
-    loadPayments(currentPage, itemsPerPage);
+    loadPayments(searchTerm, currentPage, itemsPerPage);
   }, [currentPage, itemsPerPage]);
 
   return (
@@ -109,6 +125,44 @@ const Payments = () => {
           onClose={() => setAlert(null)}
         />
       )}
+
+      {/* Search Bar */}
+      <div className="card shadow mb-3">
+        <div className="card-body">
+          <form onSubmit={handleSearch} className="row g-3">
+            <div className="col-md-10">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="fas fa-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by Order ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-md-2">
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary flex-fill">
+                  Search
+                </button>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleClearSearch}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div className="card shadow">
         <div className="card-body">

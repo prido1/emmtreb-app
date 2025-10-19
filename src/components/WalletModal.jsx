@@ -7,8 +7,9 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [operation, setOperation] = useState('add'); // 'add' or 'deduct'
 
-  const handleAddBalance = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!amount || parseFloat(amount) <= 0) {
@@ -16,13 +17,27 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
       return;
     }
 
+    // Check if deduction amount exceeds balance
+    if (operation === 'deduct' && parseFloat(amount) > parseFloat(wallet?.balance || 0)) {
+      setError('Deduction amount cannot exceed current balance');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      const response = await walletsAPI.addBalance(customer.id, {
+      const apiCall = operation === 'add'
+        ? walletsAPI.addBalance
+        : walletsAPI.deductBalance;
+
+      const defaultNote = operation === 'add'
+        ? 'Manual balance addition by admin'
+        : 'Manual balance deduction by admin';
+
+      const response = await apiCall(customer.id, {
         amount: parseFloat(amount),
-        notes: notes || 'Manual balance addition by admin',
+        notes: notes || defaultNote,
       });
 
       if (response.success) {
@@ -30,7 +45,7 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
         onClose();
       }
     } catch (err) {
-      setError(err.message || 'Failed to add balance');
+      setError(err.message || `Failed to ${operation} balance`);
     } finally {
       setLoading(false);
     }
@@ -93,18 +108,46 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
               </div>
             </div>
 
-            {/* Add Balance Form */}
-            <form onSubmit={handleAddBalance}>
+            {/* Wallet Operation Form */}
+            <form onSubmit={handleSubmit}>
+              {/* Operation Type Selector */}
+              <div className="mb-3">
+                <label className="form-label">
+                  <i className="fas fa-exchange-alt me-1"></i>
+                  Operation Type *
+                </label>
+                <div className="btn-group w-100" role="group">
+                  <button
+                    type="button"
+                    className={`btn ${operation === 'add' ? 'btn-success' : 'btn-outline-success'}`}
+                    onClick={() => setOperation('add')}
+                    disabled={loading}
+                  >
+                    <i className="fas fa-plus me-1"></i>
+                    Add Balance
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${operation === 'deduct' ? 'btn-danger' : 'btn-outline-danger'}`}
+                    onClick={() => setOperation('deduct')}
+                    disabled={loading}
+                  >
+                    <i className="fas fa-minus me-1"></i>
+                    Deduct Balance
+                  </button>
+                </div>
+              </div>
+
               <div className="mb-3">
                 <label htmlFor="amount" className="form-label">
                   <i className="fas fa-dollar-sign me-1"></i>
-                  Add Balance Amount *
+                  Amount *
                 </label>
                 <input
                   type="number"
                   className="form-control"
                   id="amount"
-                  placeholder="Enter amount to add"
+                  placeholder={`Enter amount to ${operation}`}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   step="0.01"
@@ -113,7 +156,11 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
                   disabled={loading}
                 />
                 <small className="text-muted">
-                  New balance will be: {formatCurrency((parseFloat(wallet?.balance || 0) + parseFloat(amount || 0)))}
+                  New balance will be: {formatCurrency(
+                    operation === 'add'
+                      ? (parseFloat(wallet?.balance || 0) + parseFloat(amount || 0))
+                      : (parseFloat(wallet?.balance || 0) - parseFloat(amount || 0))
+                  )}
                 </small>
               </div>
 
@@ -152,18 +199,18 @@ const WalletModal = ({ wallet, customer, onClose, onUpdate }) => {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-success"
+                  className={`btn ${operation === 'add' ? 'btn-success' : 'btn-danger'}`}
                   disabled={loading}
                 >
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2"></span>
-                      Adding...
+                      Processing...
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-plus me-1"></i>
-                      Add Balance
+                      <i className={`fas fa-${operation === 'add' ? 'plus' : 'minus'} me-1`}></i>
+                      {operation === 'add' ? 'Add Balance' : 'Deduct Balance'}
                     </>
                   )}
                 </button>

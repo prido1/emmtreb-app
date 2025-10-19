@@ -95,6 +95,7 @@ export const walletsAPI = {
   getAll: (params) => apiClient.get('/api/wallets/admin/all', { params }),
   getById: (customerId) => apiClient.get(`/api/wallets/admin/${customerId}`),
   addBalance: (customerId, data) => apiClient.post(`/api/wallets/admin/${customerId}/add-funds`, data),
+  deductBalance: (customerId, data) => apiClient.post(`/api/wallets/admin/${customerId}/deduct-funds`, data),
   freeze: (customerId, data) => apiClient.patch(`/api/wallets/admin/${customerId}/freeze`, data),
   getStats: () => apiClient.get('/api/wallets/admin/stats'),
 };

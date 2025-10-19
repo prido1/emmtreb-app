@@ -13,6 +13,7 @@ const Orders = () => {
   const [filter, setFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [pagination, setPagination] = useState({
@@ -20,12 +21,15 @@ const Orders = () => {
     pages: 0,
   });
 
-  const loadOrders = async (status = 'all', page = 1, limit = 20) => {
+  const loadOrders = async (status = 'all', search = '', page = 1, limit = 20) => {
     try {
       setLoading(true);
       const params = { page, limit };
       if (status !== 'all') {
         params.status = status;
+      }
+      if (search) {
+        params.search = search;
       }
 
       const response = await ordersAPI.getAll(params);
@@ -42,7 +46,7 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    loadOrders(filter, currentPage, itemsPerPage);
+    loadOrders(filter, searchTerm, currentPage, itemsPerPage);
   }, [filter, currentPage, itemsPerPage]);
 
   const handleFilterChange = (newFilter) => {
@@ -51,8 +55,20 @@ const Orders = () => {
   };
 
   const handleRefresh = () => {
-    loadOrders(filter, currentPage, itemsPerPage);
+    loadOrders(filter, searchTerm, currentPage, itemsPerPage);
     setAlert({ message: 'Orders refreshed', type: 'success' });
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadOrders(filter, searchTerm, 1, itemsPerPage);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setCurrentPage(1);
+    loadOrders(filter, '', 1, itemsPerPage);
   };
 
   const handlePageChange = (page) => {
@@ -74,7 +90,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Order activated successfully', type: 'success' });
-        loadOrders(filter, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
       }
     } catch (error) {
       setAlert({ message: 'Failed to activate order', type: 'danger' });
@@ -93,7 +109,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Order declined successfully', type: 'success' });
-        loadOrders(filter, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
       }
     } catch (error) {
       setAlert({ message: 'Failed to decline order', type: 'danger' });
@@ -115,7 +131,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Customer notified about wrong serial number', type: 'success' });
-        loadOrders(filter, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
       }
     } catch (error) {
       setAlert({ message: 'Failed to process request', type: 'danger' });
@@ -201,6 +217,44 @@ const Orders = () => {
           onClose={() => setAlert(null)}
         />
       )}
+
+      {/* Search Bar */}
+      <div className="card shadow mb-3">
+        <div className="card-body">
+          <form onSubmit={handleSearch} className="row g-3">
+            <div className="col-md-10">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="fas fa-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by Order ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-md-2">
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary flex-fill">
+                  Search
+                </button>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleClearSearch}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div className="card shadow">
         <div className="card-body">

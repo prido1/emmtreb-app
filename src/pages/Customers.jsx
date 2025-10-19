@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import WalletModal from '../components/WalletModal';
+import Pagination from '../components/Pagination';
 import { customersAPI } from '../services/api';
 import { formatCurrency, formatDate } from '../utils/helpers';
 
@@ -11,13 +12,25 @@ const Customers = () => {
   const [alert, setAlert] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    pages: 0,
+  });
 
-  const loadCustomers = async () => {
+  const loadCustomers = async (search = '', page = 1, limit = 20) => {
     try {
       setLoading(true);
-      const response = await customersAPI.getAll();
+      const params = { page, limit };
+      if (search) {
+        params.search = search;
+      }
+      const response = await customersAPI.getAll(params);
       if (response && response.success) {
         setCustomers(response.data.customers || []);
+        setPagination(response.data.pagination || { total: 0, pages: 0 });
       }
     } catch (error) {
       console.error('Error loading customers:', error);
@@ -49,9 +62,30 @@ const Customers = () => {
     setAlert({ message: 'Wallet balance updated successfully', type: 'success' });
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (limit) => {
+    setItemsPerPage(limit);
+    setCurrentPage(1);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadCustomers(searchTerm, 1, itemsPerPage);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setCurrentPage(1);
+    loadCustomers('', 1, itemsPerPage);
+  };
+
   useEffect(() => {
-    loadCustomers();
-  }, []);
+    loadCustomers(searchTerm, currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
 
   return (
     <div className="content-section">
@@ -66,6 +100,44 @@ const Customers = () => {
           onClose={() => setAlert(null)}
         />
       )}
+
+      {/* Search Bar */}
+      <div className="card shadow mb-3">
+        <div className="card-body">
+          <form onSubmit={handleSearch} className="row g-3">
+            <div className="col-md-10">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="fas fa-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by phone number or name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-md-2">
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary flex-fill">
+                  Search
+                </button>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleClearSearch}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <div className="card shadow">
         <div className="card-body">
@@ -130,6 +202,18 @@ const Customers = () => {
                 </tbody>
               </table>
             </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && pagination.total > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.pages}
+              totalItems={pagination.total}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
           )}
         </div>
       </div>
