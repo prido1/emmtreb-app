@@ -25,6 +25,10 @@ body {
     overflow-y: auto;
 }
 
+.logo{
+    max-width: 100px;
+}
+
 .sidebar .nav-link {
     font-weight: 500;
     color: #333;

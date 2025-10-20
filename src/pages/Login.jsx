@@ -46,7 +46,7 @@ const Login = () => {
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <i className="fas fa-shield-alt fa-2x mb-3"></i>
+          <img src="/logo.png" alt="Logo" className="login-logo mb-3" />
           <h1>Admin Panel</h1>
           <p>Emmtreb System</p>
         </div>
