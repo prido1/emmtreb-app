@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
+import Pagination from '../components/Pagination';
 import { productsAPI } from '../services/api';
 import { formatCurrency, calculateProfit } from '../utils/helpers';
 
@@ -10,6 +11,11 @@ const Products = () => {
   const [alert, setAlert] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -33,6 +39,23 @@ const Products = () => {
     { value: 'internet', label: 'Internet Services' },
     { value: 'entertainment', label: 'Entertainment' },
   ];
+
+  // Pagination calculations
+  const totalItems = products.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = products.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   const loadProducts = async () => {
     try {
@@ -220,7 +243,7 @@ const Products = () => {
                       </td>
                     </tr>
                   ) : (
-                    products.map((product) => {
+                    currentProducts.map((product) => {
                       const { profit, profitPercent } = calculateProfit(
                         product.sellingPrice,
                         product.basePrice
@@ -290,6 +313,18 @@ const Products = () => {
                 </tbody>
               </table>
             </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && products.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
           )}
         </div>
       </div>
