@@ -7,7 +7,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
       <div className="container-fluid">
         <a className="navbar-brand" href="#">
-            <img src="/logo.png" alt="Logo" className="logo" />
+            <img src="/logo.jpg" alt="Logo" className="logo" />
         </a>
 
         <div className="navbar-nav ms-auto">
