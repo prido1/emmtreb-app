@@ -10,6 +10,7 @@ const Sidebar = ({ pendingOrdersCount = 0 }) => {
     { path: '/orders', icon: 'fa-shopping-cart', label: 'Orders', badge: pendingOrdersCount },
     { path: '/products', icon: 'fa-box', label: 'Products' },
     { path: '/customers', icon: 'fa-users', label: 'Customers' },
+    { path: '/registrations', icon: 'fa-user-plus', label: 'Registrations' },
     { path: '/payments', icon: 'fa-credit-card', label: 'Payments' },
     { path: '/reports', icon: 'fa-chart-bar', label: 'Reports' },
   ];

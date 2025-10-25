@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Products from './pages/Products';
 import Customers from './pages/Customers';
+import Registrations from './pages/Registrations';
 import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
@@ -32,6 +33,7 @@ function App() {
             <Route path="orders" element={<Orders />} />
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />
+            <Route path="registrations" element={<Registrations />} />
             <Route path="payments" element={<Payments />} />
             <Route path="reports" element={<Reports />} />
             <Route path="admins" element={<AdminManagement />} />
