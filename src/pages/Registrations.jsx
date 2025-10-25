@@ -11,7 +11,7 @@ const Registrations = () => {
   const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/admin/customers/pending');
+      const response = await api.get('/customers/pending');
       setRegistrations(response.data);
     } catch (err) {
       setError(err.message);
