@@ -161,10 +161,6 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
                     alt="ID Document"
                     className="img-fluid"
                     style={{ maxWidth: '100%', height: 'auto' }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
                   />
                   <div style={{ display: 'none' }}>
                     <p className="text-muted">Unable to load ID document image</p>
