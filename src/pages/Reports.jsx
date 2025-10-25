@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import Pagination from '../components/Pagination';
+import DateRangePicker from '../components/DateRangePicker';
 import { reportsAPI } from '../services/api';
 import { formatCurrency } from '../utils/helpers';
 
@@ -9,15 +10,23 @@ const Reports = () => {
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
-  const [period, setPeriod] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
-  const loadReports = async (selectedPeriod) => {
+  const loadReports = async (start = '', end = '') => {
     try {
       setLoading(true);
-      // Use 'sales' report type which gives us the summary we need
-      const response = await reportsAPI.get('sales', { period: selectedPeriod });
+      const params = {};
+
+      // If date range is provided, use it; otherwise load all data
+      if (start && end) {
+        params.startDate = start;
+        params.endDate = end;
+      }
+
+      const response = await reportsAPI.get('sales', params);
       if (response.success) {
         setReports(response.data);
       }
@@ -30,12 +39,21 @@ const Reports = () => {
   };
 
   useEffect(() => {
-    loadReports(period);
-  }, [period]);
+    loadReports(startDate, endDate);
+  }, []);
 
-  const handlePeriodChange = (newPeriod) => {
-    setPeriod(newPeriod);
-    setCurrentPage(1); // Reset to first page when period changes
+  const handleDateRangeChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+    setCurrentPage(1); // Reset to first page when date range changes
+    loadReports(start, end);
+  };
+
+  const handleClearDateRange = () => {
+    setStartDate('');
+    setEndDate('');
+    setCurrentPage(1);
+    loadReports('', '');
   };
 
   const handlePageChange = (page) => {
@@ -60,40 +78,15 @@ const Reports = () => {
 
   return (
     <div className="content-section">
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 className="h2">Reports & Analytics</h1>
-        <div className="btn-toolbar mb-2 mb-md-0">
-          <div className="btn-group me-2">
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-secondary ${period === 'today' ? 'active' : ''}`}
-              onClick={() => handlePeriodChange('today')}
-            >
-              Today
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-secondary ${period === 'week' ? 'active' : ''}`}
-              onClick={() => handlePeriodChange('week')}
-            >
-              This Week
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-secondary ${period === 'month' ? 'active' : ''}`}
-              onClick={() => handlePeriodChange('month')}
-            >
-              This Month
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-secondary ${period === 'all' ? 'active' : ''}`}
-              onClick={() => handlePeriodChange('all')}
-            >
-              All Time
-            </button>
-          </div>
-        </div>
+      <div className="pt-3 pb-2 mb-3 border-bottom">
+        <h1 className="h2 mb-3">Reports & Analytics</h1>
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onDateRangeChange={handleDateRangeChange}
+          onClear={handleClearDateRange}
+          showPresets={true}
+        />
       </div>
 
       {alert && (

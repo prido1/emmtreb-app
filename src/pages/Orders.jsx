@@ -3,6 +3,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import OrderDetailsModal from '../components/OrderDetailsModal';
 import Pagination from '../components/Pagination';
+import DateRangePicker from '../components/DateRangePicker';
 import { ordersAPI } from '../services/api';
 import { formatCurrency, formatDate, getStatusBadgeClass, getPaymentMethodBadgeClass } from '../utils/helpers';
 
@@ -14,6 +15,8 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [pagination, setPagination] = useState({
@@ -21,7 +24,7 @@ const Orders = () => {
     pages: 0,
   });
 
-  const loadOrders = async (status = 'all', search = '', page = 1, limit = 20) => {
+  const loadOrders = async (status = 'all', search = '', page = 1, limit = 20, start = '', end = '') => {
     try {
       setLoading(true);
       const params = { page, limit };
@@ -30,6 +33,10 @@ const Orders = () => {
       }
       if (search) {
         params.search = search;
+      }
+      if (start && end) {
+        params.startDate = start;
+        params.endDate = end;
       }
 
       const response = await ordersAPI.getAll(params);
@@ -46,8 +53,8 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    loadOrders(filter, searchTerm, currentPage, itemsPerPage);
-  }, [filter, currentPage, itemsPerPage]);
+    loadOrders(filter, searchTerm, currentPage, itemsPerPage, startDate, endDate);
+  }, [filter, currentPage, itemsPerPage, startDate, endDate]);
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
@@ -55,20 +62,34 @@ const Orders = () => {
   };
 
   const handleRefresh = () => {
-    loadOrders(filter, searchTerm, currentPage, itemsPerPage);
+    loadOrders(filter, searchTerm, currentPage, itemsPerPage, startDate, endDate);
     setAlert({ message: 'Orders refreshed', type: 'success' });
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadOrders(filter, searchTerm, 1, itemsPerPage);
+    loadOrders(filter, searchTerm, 1, itemsPerPage, startDate, endDate);
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
     setCurrentPage(1);
-    loadOrders(filter, '', 1, itemsPerPage);
+    loadOrders(filter, '', 1, itemsPerPage, startDate, endDate);
+  };
+
+  const handleDateRangeChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+    setCurrentPage(1);
+    loadOrders(filter, searchTerm, 1, itemsPerPage, start, end);
+  };
+
+  const handleClearDateRange = () => {
+    setStartDate('');
+    setEndDate('');
+    setCurrentPage(1);
+    loadOrders(filter, searchTerm, 1, itemsPerPage, '', '');
   };
 
   const handlePageChange = (page) => {
@@ -90,7 +111,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Order activated successfully', type: 'success' });
-        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage, startDate, endDate);
       }
     } catch (error) {
       setAlert({ message: 'Failed to activate order', type: 'danger' });
@@ -109,7 +130,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Order declined successfully', type: 'success' });
-        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage, startDate, endDate);
       }
     } catch (error) {
       setAlert({ message: 'Failed to decline order', type: 'danger' });
@@ -131,7 +152,7 @@ const Orders = () => {
 
       if (response.success) {
         setAlert({ message: 'Customer notified about wrong serial number', type: 'success' });
-        loadOrders(filter, searchTerm, currentPage, itemsPerPage);
+        loadOrders(filter, searchTerm, currentPage, itemsPerPage, startDate, endDate);
       }
     } catch (error) {
       setAlert({ message: 'Failed to process request', type: 'danger' });
@@ -218,7 +239,7 @@ const Orders = () => {
         />
       )}
 
-      {/* Search Bar */}
+      {/* Search Bar and Date Range */}
       <div className="card shadow mb-3">
         <div className="card-body">
           <form onSubmit={handleSearch} className="row g-3">
@@ -251,6 +272,16 @@ const Orders = () => {
                   </button>
                 )}
               </div>
+            </div>
+            <div className="col-12">
+              <hr className="my-2" />
+              <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onDateRangeChange={handleDateRangeChange}
+                onClear={handleClearDateRange}
+                showPresets={true}
+              />
             </div>
           </form>
         </div>
