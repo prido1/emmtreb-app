@@ -9,7 +9,7 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
 
   const handleApprove = async () => {
     try {
-      await api.post(`/api/admin/customers/${registration.id}/approve`);
+      await api.post(`/api/admin/customers/registrations/${registration.id}/approve`);
       onUpdate();
       onClose();
     } catch (error) {
@@ -19,7 +19,7 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
 
   const handleReject = async () => {
     try {
-      await api.post(`/api/admin/customers/${registration.id}/reject`);
+      await api.post(`/api/admin/customers/registrations/${registration.id}/reject`);
       onUpdate();
       onClose();
     } catch (error) {
