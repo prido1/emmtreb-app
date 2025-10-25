@@ -12,7 +12,7 @@ const Registrations = () => {
     try {
       setLoading(true);
       const response = await api.get('/api/admin/customers/registrations/pending');
-      setRegistrations(response.data);
+      setRegistrations(response.data.customers);
     } catch (err) {
       setError(err.message);
     } finally {
