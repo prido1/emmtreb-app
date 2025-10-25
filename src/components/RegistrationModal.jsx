@@ -22,10 +22,11 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
       setError(null);
       const response = await api.post(`/api/admin/customers/registrations/${registration.id}/approve`);
 
-      if (response.data.success) {
+      // Response interceptor already extracts response.data, so response is the data object
+      if (response.success) {
         alert('Registration approved successfully!');
-        onUpdate();
         onClose();
+        onUpdate();
       }
     } catch (error) {
       console.error('Error approving registration:', error);
@@ -57,10 +58,11 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
         reason: rejectionReason.trim()
       });
 
-      if (response.data.success) {
+      // Response interceptor already extracts response.data, so response is the data object
+      if (response.success) {
         alert('Registration rejected successfully!');
-        onUpdate();
         onClose();
+        onUpdate();
       }
     } catch (error) {
       console.error('Error rejecting registration:', error);
