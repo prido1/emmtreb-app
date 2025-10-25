@@ -12,10 +12,11 @@ const Reports = () => {
   const [alert, setAlert] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
-  const loadReports = async (start = '', end = '') => {
+  const loadReports = async (start = '', end = '', orderStatus = '') => {
     try {
       setLoading(true);
       const params = {};
@@ -24,6 +25,11 @@ const Reports = () => {
       if (start && end) {
         params.startDate = start;
         params.endDate = end;
+      }
+
+      // If status is provided, filter by status
+      if (orderStatus) {
+        params.status = orderStatus;
       }
 
       const response = await reportsAPI.get('sales', params);
@@ -39,21 +45,28 @@ const Reports = () => {
   };
 
   useEffect(() => {
-    loadReports(startDate, endDate);
+    loadReports(startDate, endDate, status);
   }, []);
 
   const handleDateRangeChange = (start, end) => {
     setStartDate(start);
     setEndDate(end);
     setCurrentPage(1); // Reset to first page when date range changes
-    loadReports(start, end);
+    loadReports(start, end, status);
   };
 
   const handleClearDateRange = () => {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
-    loadReports('', '');
+    loadReports('', '', status);
+  };
+
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+    setCurrentPage(1);
+    loadReports(startDate, endDate, newStatus);
   };
 
   const handlePageChange = (page) => {
@@ -80,6 +93,25 @@ const Reports = () => {
     <div className="content-section">
       <div className="pt-3 pb-2 mb-3 border-bottom">
         <h1 className="h2 mb-3">Reports & Analytics</h1>
+        <div className="row g-3 mb-3">
+          <div className="col-md-3">
+            <label className="form-label small">Filter by Status</label>
+            <select
+              className="form-select form-select-sm"
+              value={status}
+              onChange={handleStatusChange}
+            >
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="activated">Activated</option>
+              <option value="declined">Declined</option>
+              <option value="wrong_serial">Wrong Serial</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+        </div>
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}

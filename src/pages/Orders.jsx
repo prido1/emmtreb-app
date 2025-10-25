@@ -181,53 +181,35 @@ const Orders = () => {
 
   return (
     <div className="content-section">
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 className="h2">Order Management</h1>
-        <div className="btn-toolbar mb-2 mb-md-0">
-          <div className="btn-group me-2">
+      <div className="pt-3 pb-2 mb-3 border-bottom">
+        <h1 className="h2 mb-3">Order Management</h1>
+        <div className="d-flex justify-content-between flex-wrap align-items-center mb-3">
+          <div className="col-md-3 mb-2">
+            <label className="form-label small">Filter by Status</label>
+            <select
+              className="form-select form-select-sm"
+              value={filter}
+              onChange={(e) => handleFilterChange(e.target.value)}
+            >
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="activated">Activated</option>
+              <option value="declined">Declined</option>
+              <option value="wrong_serial">Wrong Serial</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <div className="mb-2">
             <button
               type="button"
-              className={`btn btn-sm btn-outline-secondary ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('all')}
+              className="btn btn-sm btn-outline-secondary"
+              onClick={handleRefresh}
             >
-              All
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-warning ${filter === 'pending' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('pending')}
-            >
-              Pending
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-success ${filter === 'paid' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('paid')}
-            >
-              Paid
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-primary ${filter === 'activated' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('activated')}
-            >
-              Activated
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-outline-danger ${filter === 'declined' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('declined')}
-            >
-              Declined
+              <i className="fas fa-sync-alt me-1"></i>Refresh
             </button>
           </div>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary"
-            onClick={handleRefresh}
-          >
-            <i className="fas fa-sync-alt me-1"></i>Refresh
-          </button>
         </div>
       </div>
 
