@@ -88,8 +88,8 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
     const pathParts = registration.idDocumentPath.split(/[/\\]/);
     const filename = pathParts[pathParts.length - 1];
 
-    // Construct the URL to the backend
-    return `${api.defaults.baseURL}/uploads/id-documents/${filename}`;
+    // Construct the URL to the backend - use hardcoded API URL
+    return `https://sathub.emmtreb.com/uploads/id-documents/${filename}`;
   };
 
   const getPlatformBadgeClass = (platform) => {
@@ -161,6 +161,7 @@ const RegistrationModal = ({ registration, onClose, onUpdate }) => {
                     alt="ID Document"
                     className="img-fluid"
                     style={{ maxWidth: '100%', height: 'auto' }}
+                    crossOrigin="anonymous"
                   />
                   <div style={{ display: 'none' }}>
                     <p className="text-muted">Unable to load ID document image</p>
