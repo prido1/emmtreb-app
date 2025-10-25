@@ -16,7 +16,7 @@ const Registrations = () => {
       setLoading(true);
       setError(null);
       const response = await api.get('/api/admin/customers/registrations/pending');
-      setRegistrations(response.data.data.customers || []);
+      setRegistrations(response.data.customers || []);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load registrations');
     } finally {
