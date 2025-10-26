@@ -91,7 +91,7 @@ const Customers = () => {
     setAlert(null);
 
     try {
-      const response = await customersAPI.remove(selectedCustomer.id);
+      const response = await customersAPI.delete(selectedCustomer.id);
       if (response && response.success) {
         setCustomers((prevCustomers) =>
           prevCustomers.filter((customer) => customer.id !== selectedCustomer.id)
