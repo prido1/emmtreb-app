@@ -58,7 +58,7 @@ export const ordersAPI = {
   activate: (id, data) => apiClient.patch(`/api/orders/${id}/process`, { action: 'activate', ...data }),
   decline: (id, data) => apiClient.patch(`/api/orders/${id}/process`, { action: 'decline', ...data }),
   wrongSerial: (id, data) => apiClient.patch(`/api/orders/${id}/process`, { action: 'wrong_serial', ...data }),
-  getStats: (params) => apiClient.get('/api/orders/admin/stats', { params }),
+  getStats: (params) => apiClient.get('/api/orders/admin/stats'),
 };
 
 // Products API
@@ -77,6 +77,7 @@ export const customersAPI = {
   getAll: (params) => apiClient.get('/api/admin/customers', { params }),
   getById: (id) => apiClient.get(`/api/admin/customers/${id}`),
   update: (id, data) => apiClient.patch(`/api/admin/customers/${id}`, data),
+  delete: (id) => apiClient.delete(`/api/admin/customers/${id}`), // Added delete method
   getStats: () => apiClient.get('/api/admin/customers/stats'),
 };
 
@@ -87,7 +88,7 @@ export const paymentsAPI = {
   confirmPaid: (id, data) => apiClient.post(`/api/payments/admin/${id}/confirm-paid`, data),
   refund: (id, data) => apiClient.post(`/api/payments/admin/${id}/refund`, data),
   updateStatus: (id, data) => apiClient.patch(`/api/payments/admin/${id}/status`, data),
-  getStats: (params) => apiClient.get('/api/payments/admin/stats', { params }),
+  getStats: (params) => apiClient.get('/api/payments/admin/stats'),
 };
 
 // Wallets API
