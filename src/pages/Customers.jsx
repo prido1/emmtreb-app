@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import WalletModal from '../components/WalletModal';
+import EditCustomerModal from '../components/EditCustomerModal';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal'; // New import
 import Pagination from '../components/Pagination';
 import { customersAPI } from '../services/api';
 import { formatCurrency, formatDate } from '../utils/helpers';
@@ -12,6 +14,8 @@ const Customers = () => {
   const [alert, setAlert] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // New state
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -50,8 +54,63 @@ const Customers = () => {
     setSelectedCustomer(null);
   };
 
+  const handleOpenEdit = (customer) => {
+    setSelectedCustomer(customer);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEdit = () => {
+    setShowEditModal(false);
+    setSelectedCustomer(null);
+  };
+
+  const handleCustomerUpdate = (updatedCustomer) => {
+    setCustomers((prevCustomers) =>
+      prevCustomers.map((customer) =>
+        customer.id === updatedCustomer.id ? updatedCustomer : customer
+      )
+    );
+    setAlert({ message: 'Customer updated successfully', type: 'success' });
+    handleCloseEdit();
+  };
+
+  const handleOpenDelete = (customer) => { // New function
+    setSelectedCustomer(customer);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDelete = () => { // New function
+    setShowDeleteModal(false);
+    setSelectedCustomer(null);
+  };
+
+  const handleDeleteConfirm = async () => { // New function
+    if (!selectedCustomer) return;
+
+    setLoading(true);
+    setAlert(null);
+
+    try {
+      const response = await customersAPI.remove(selectedCustomer.id);
+      if (response && response.success) {
+        setCustomers((prevCustomers) =>
+          prevCustomers.filter((customer) => customer.id !== selectedCustomer.id)
+        );
+        setAlert({ message: 'Customer deleted successfully', type: 'success' });
+        loadCustomers(searchTerm, currentPage, itemsPerPage); // Reload to update pagination/list
+      } else {
+        setAlert({ message: response.message || 'Failed to delete customer', type: 'danger' });
+      }
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      setAlert({ message: error.message || 'Failed to delete customer', type: 'danger' });
+    } finally {
+      setLoading(false);
+      handleCloseDelete();
+    }
+  };
+
   const handleWalletUpdate = (updatedWallet) => {
-    // Update the customer in the list with new wallet data
     setCustomers((prevCustomers) =>
       prevCustomers.map((customer) =>
         customer.id === selectedCustomer.id
@@ -189,10 +248,22 @@ const Customers = () => {
                         <td>
                           <div className="action-buttons">
                             <button
-                              className="btn btn-primary btn-xs"
+                              className="btn btn-primary btn-xs me-2"
+                              onClick={() => handleOpenEdit(customer)}
+                            >
+                              <i className="fas fa-edit"></i> Edit
+                            </button>
+                            <button
+                              className="btn btn-info btn-xs me-2"
                               onClick={() => handleOpenWallet(customer)}
                             >
                               <i className="fas fa-wallet"></i> Wallet
+                            </button>
+                            <button
+                              className="btn btn-danger btn-xs"
+                              onClick={() => handleOpenDelete(customer)}
+                            >
+                              <i className="fas fa-trash"></i> Delete
                             </button>
                           </div>
                         </td>
@@ -225,6 +296,24 @@ const Customers = () => {
           customer={selectedCustomer}
           onClose={handleCloseWallet}
           onUpdate={handleWalletUpdate}
+        />
+      )}
+
+      {/* Edit Customer Modal */}
+      {showEditModal && selectedCustomer && (
+        <EditCustomerModal
+          customer={selectedCustomer}
+          onClose={handleCloseEdit}
+          onUpdate={handleCustomerUpdate}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedCustomer && (
+        <DeleteConfirmationModal
+          customer={selectedCustomer}
+          onClose={handleCloseDelete}
+          onConfirm={handleDeleteConfirm}
         />
       )}
     </div>
